@@ -25,6 +25,10 @@ target/
 
 ### log
 logs/
+.DS_Store
+
+### resources
+resources/
 
 ### NetBeans ###
 /nbproject/private/
