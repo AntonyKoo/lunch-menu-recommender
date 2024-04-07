@@ -26,6 +26,8 @@ target/
 ### log
 logs/
 
+*.DS_Store
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -38,3 +40,5 @@ build/
 
 ### VS Code ###
 .vscode/
+.DS_Store
+.DS_Store
