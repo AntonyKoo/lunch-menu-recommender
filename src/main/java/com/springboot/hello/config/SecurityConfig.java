@@ -1,13 +1,17 @@
 package com.springboot.hello.config;
 
+import com.springboot.hello.service.memberService.MemberService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -16,42 +20,54 @@ public class SecurityConfig {
 //    @Autowired
 //    private SecurityUserService service;
 
+    @Autowired
+    MemberService memberService;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        // 인가(접근권한) 설정
-//        http.authorizeHttpRequests().requestMatchers("/").permitAll();
-//        http.authorizeHttpRequests().antMatchers("/admin/**").hasRole("ADMIN");
-//        http.authorizeHttpRequests().antMatchers("/member/**").hasAnyRole("ADMIN", "MEMBER");
-//        http.authorizeHttpRequests().antMatchers("/user2/loginSuccess").hasAnyRole("3", "4", "5");
-
-        // 사이트 위변조 요청 방지
-        http.csrf(AbstractHttpConfigurer::disable);
-
-        // 로그인 설정
-//        http.formLogin()
-//                .loginPage("/user2/login")
-//                .defaultSuccessUrl("/user2/loginSuccess")
-//                .failureUrl("/user2/login?success=100)")
-//                .usernameParameter("uid")
-//                .passwordParameter("pass");
-
-        // 로그아웃 설정
-//        http.logout()
-//                .invalidateHttpSession(true)
-//                .logoutRequestMatcher(new AntPathRequestMatcher("/user2/logout"))
-//                .logoutSuccessUrl("/user2/login?success=200");
-
-//        // 사용자 인증 처리 컴포넌트 서비스 등록
-//        http.userDetailsService(service);
-
+        http
+                .authorizeHttpRequests(
+                        (authorizeHttpRequests) -> authorizeHttpRequests
+                                .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
+                                .csrf((csrf) -> csrf
+                                        .ignoringRequestMatchers("/h2-console/**"))
+                .headers((headers) -> headers
+                        .addHeaderWriter(new XFrameOptionsHeaderWriter(
+                                XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
+                .formLogin((formLogin) -> formLogin
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/"));
         return http.build();
     }
 
+    // 비번 암호화 해주는 인코더
     @Bean
     public PasswordEncoder PasswordEncoder () {
         //return new MessageDigestPasswordEncoder("SHA-256");
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    AuthenticationManager authenticationMAnager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    // web.ignoring
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return (web) -> web.ignoring().requestMatchers("/ignore1","ignore2");
+    // AuthenticationManager
+//    @Bean
+//    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+//        return authenticationConfiguration.getAuthenticationManager();
+    // In-Memory Authentication: 개발 단계에서 사용자 정보를 인 메모리에 저장
+
+
+//    }
+
+//    }
+
+
 
 }
