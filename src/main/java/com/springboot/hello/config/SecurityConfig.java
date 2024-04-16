@@ -17,8 +17,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-//    @Autowired
-//    private SecurityUserService service;
 
     @Autowired
     MemberService memberService;
@@ -52,22 +50,5 @@ public class SecurityConfig {
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
-    // web.ignoring
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web) -> web.ignoring().requestMatchers("/ignore1","ignore2");
-    // AuthenticationManager
-//    @Bean
-//    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-//        return authenticationConfiguration.getAuthenticationManager();
-    // In-Memory Authentication: 개발 단계에서 사용자 정보를 인 메모리에 저장
-
-
-//    }
-
-//    }
-
-
 
 }
