@@ -24,8 +24,8 @@ public class UserSecurityService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Member> _member = Optional.ofNullable(this.memberRepository.findByEmail(email));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<Member> _member = this.memberRepository.findByusername(username);
 
         if (_member.isEmpty()) {
             throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
@@ -35,10 +35,11 @@ public class UserSecurityService implements UserDetailsService {
 
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        if ("admin".equals(email)) {
+        if ("admin".equals(username)) {
+            authorities.add(new SimpleGrantedAuthority(Role.USER.getValue()));
+        } else {
             authorities.add(new SimpleGrantedAuthority(Role.USER.getValue()));
         }
-
-        return new User(member.getEmail(),member.getPassword(),authorities);
+        return new User(member.getUsername(),member.getPassword(),authorities);
     }
 }

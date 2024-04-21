@@ -3,8 +3,17 @@ package com.springboot.hello.domain;
 import com.springboot.hello.constant.Role;
 import com.springboot.hello.dto.MemberFormDto;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 @Data
 @Table(name="member")
@@ -16,7 +25,8 @@ public class Member {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
 
-    private String name;
+    @Column(unique=true)
+    private String username;
 
     @Column(unique = true)
     private String email;
@@ -26,10 +36,12 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+
+
     public static Member createMember(MemberFormDto memberFormDto,
                                       PasswordEncoder passwordEncoder) {
         Member member = new Member();
-        member.setName(memberFormDto.getName());
+        member.setUsername(memberFormDto.getUsername());
         member.setEmail(memberFormDto.getEmail());
         String password = passwordEncoder.encode(memberFormDto.getPassword());
         member.setPassword(password);

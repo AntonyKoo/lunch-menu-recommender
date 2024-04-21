@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>한솥도시락 메뉴 추천</title>
     <!-- 부트스트랩 CSS 링크 추가 -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- 추가 CSS 파일 링크 -->
-    <link rel="stylesheet" href="styles/main.css">
+<!--    <link rel="stylesheet" href="styles/main.css">-->
     <style>
         /* 컨베이어 벨트 애니메이션 */
         .menu-conveyor {
@@ -40,7 +41,7 @@
 
 <!-- 로그인 모달 -->
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
-     aria-hidden="true">
+     aria-hidden="true" th:if="${showModal}">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -52,37 +53,39 @@
             <div class="modal-body">
                 <!-- 로그인 폼 -->
                 <form id="loginForm" th:action="@{/login}" method="post">
+                    <!-- 잘못된 로그인 정보가 입력되었을 때 -->
                     <div th:if="${param.error}">
                         <div class="alert alert-danger">
                             사용자ID 또는 비밀번호를 확인해 주세요.
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="email">이메일</label>
+                        <label th:for="email">이메일</label>
                         <input type="text" class="form-control" placeholder="이메일을 입력해 주세요." id="loginEmail" name="email" required>
                     </div>
                     <div class="form-group">
-                        <label for="loginPassword">비밀번호</label>
+                        <label th:for="loginPassword">비밀번호</label>
                         <input type="password" class="form-control" placeholder="비밀번호를 입력해 주세요." id="loginPassword" name="password" required>
                     </div>
                     <button type="submit" class="btn btn-primary">로그인</button>
                 </form>
                 <div id="loggedInUser" style="display: none;">
-                    <span id="userName"></span>님 환영합니다. <button id="logoutBtn">로그아웃</button>
+                    <span id="signinUsername"></span>님 환영합니다. <button id="logoutBtn" sec:authorize="isAuthenticated()">로그아웃</button>
                 </div>
                 <!-- 회원가입 폼 -->
                 <form id="signupForm" style="display: none;" th:action="@{/members/new}" method="post" th:object="${memberFormDto}">
+<!--                    <div th:replace="~{form_errors :: formErrorsFragment}"></div>-->
                     <div class="form-group">
-                        <label th:for="name">이름</label>
-                        <input type="text" class="form-control" placeholder="이름을 입력해 주세요." id="name" name="name" required>
+                        <label th:for="username" class="form-label">사용자 ID</label>
+                        <input type="text" class="form-control" placeholder="이름을 입력해 주세요." required>
                     </div>
                     <div class="form-group">
-                        <label th:for="email">이메일</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <label th:for="email" class="form-label">이메일</label>
+                        <input type="email" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label th:for="password">비밀번호</label>
-                        <input type="password" class="form-control" id="signupPassword" name="password" required>
+                        <label th:for="password" class="form-label">비밀번호</label>
+                        <input type="password" class="form-control" required>
                     </div>
                     <button type="submit" class="btn btn-primary">가입하기</button>
                 </form>
@@ -105,7 +108,7 @@
     <!-- 버튼 그룹 -->
     <div class="text-center mb-4">
         <div class="btn-group" role="group">
-            <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#loginModal">로그인</button>
+            <button type="button" class="btn btn-primary mr-2" sec:authorize="isAnonymous()" data-toggle="modal" data-target="#loginModal">로그인</button>
             <form th:action="@{/api/v1/recommend/menu}" method="get" style="display: inline;">
                 <button type="submit" class="btn btn-success mr-2" id="menuRecommendRequestBtn">메뉴 추천받기</button>
             </form>
@@ -344,7 +347,7 @@
         document.getElementById("loginForm").reset(); // 폼 초기화
         document.getElementById("loginModal").style.display = "none"; // 모달 숨기기
         document.getElementById("loggedInUser").style.display = "block"; // 로그인 성공 메시지 표시
-        document.getElementById("userName").textContent = data.username; // 사용자 이름 표시
+        document.getElementById("signinUsername").textContent = data.username; // 사용자 이름 표시
 
         // 로그아웃 버튼 이벤트 처리
         document.getElementById("logoutBtn").addEventListener("click", function() {
@@ -360,7 +363,6 @@
       });
     });
 </script>
-
 
 </body>
 </html>
