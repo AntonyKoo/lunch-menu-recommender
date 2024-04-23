@@ -32,17 +32,23 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(
                         (authorizeHttpRequests) -> authorizeHttpRequests
-                                .requestMatchers("/","/index","/api/v1/recommend/menu").permitAll())
+//                                .requestMatchers("/","/index","/api/v1/recommend/menu","/login").permitAll())
+                                .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
                                 .csrf((csrf) -> csrf
-                                        .ignoringRequestMatchers("/h2-console/**"))
+                                        .ignoringRequestMatchers("/login"))
+                                        // CSRF 방어를 해제할 url을 설정, H2 콘솔 등을 등록하기도 함
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
+                                // CSRF 빙어로 인해 헤더가 DENY 되어 페이지 프레임이 깨지지 않도록 하기
                 .formLogin((formLogin) -> formLogin
-                        .loginPage("/")
+                        // 로그인 URL을 등록하기, 여기에 URL을 설정했다면, 컨트롤러에 매핑해야 함
+                        // 나 같은 경우는 별도 로그인 페이지를 구성하지 않아서 필요 ㄴㄴ
+                        .loginProcessingUrl("/login")
+                        // 로그인 폼의 action 속성을 지정하는 것과 같음
                         .permitAll()
                         .defaultSuccessUrl("/")
-                        .failureUrl("/login?error=true"))
+                        .failureUrl("/?error=true"))
                 .logout((logout) -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))
                         .logoutSuccessUrl("/")

@@ -25,7 +25,7 @@ public class MemberService implements UserDetailsService {
     }
 
     private void validateDuplicateMember(Member member) {
-        Optional<Member> findMember = memberRepository.findByusername(member.getUsername());
+        Optional<Member> findMember = memberRepository.findByUsername(member.getUsername());
         if(findMember != null) {
             throw new IllegalStateException("이미 가입된 회원입니다.");
         }
@@ -33,7 +33,7 @@ public class MemberService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Member> memberOptional = memberRepository.findByusername(username);
+        Optional<Member> memberOptional = memberRepository.findByUsername(username);
 
         Member member = memberOptional.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
