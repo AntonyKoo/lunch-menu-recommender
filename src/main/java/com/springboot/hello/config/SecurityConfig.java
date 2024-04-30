@@ -34,8 +34,8 @@ public class SecurityConfig {
                         (authorizeHttpRequests) -> authorizeHttpRequests
 //                                .requestMatchers("/","/index","/api/v1/recommend/menu","/login").permitAll())
                                 .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
-                                .csrf((csrf) -> csrf
-                                        .ignoringRequestMatchers("/login"))
+//                                .csrf((csrf) -> csrf
+//                                        .ignoringRequestMatchers("/login"))
                                         // CSRF 방어를 해제할 url을 설정, H2 콘솔 등을 등록하기도 함
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
